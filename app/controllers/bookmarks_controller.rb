@@ -25,7 +25,7 @@ class BookmarksController < ApplicationController
   # POST /bookmarks
   # POST /bookmarks.json
   def create
-    @bookmark = Bookmark.new(bookmark_params)
+    @bookmark = Bookmark.new(bookmark_params.merge({ user: current_user }))
 
     respond_to do |format|
       if @bookmark.save
@@ -65,11 +65,10 @@ class BookmarksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_bookmark
-      @bookmark = Bookmark.find(params[:id])
-      #unless @bookmark = current_user.bookmarks.where(id:params[:id]).first
-      #    flash[:alert] = 'bookmark not found'
-      #    redirect_to root_url
-      #end
+      unless @bookmark = current_user.bookmarks.where(id:params[:id]).first
+          flash[:alert] = 'bookmark not found'
+          redirect_to root_url
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
